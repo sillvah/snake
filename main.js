@@ -5,9 +5,12 @@ const MS_PER_FRAME = 100;
 const BOX_SIZE = 32;
 const SNAKE_COLOR = "#00e575";
 const BACKGROUND_COLOR = "#2b2d2d";
+const FOOD_COLOR = "#f4b400";
 
-const snake = [{ x: (canvas.width - 32) / 2, y: (canvas.height - 32) / 2 }];
+let score = 0;
+const snake = [{ x: canvas.width / 2, y: canvas.height / 2 }];
 const velocity = { dx: 0, dy: 0 };
+const food = { x: 32, y: 32 };
 
 document.addEventListener("keydown", processInput);
 const gameLoop = setInterval(() => {
@@ -43,7 +46,14 @@ function update() {
     y: snakeHead.y + velocity.dy,
   };
   snake.unshift(nextHeadPosition);
-  snake.pop();
+
+  if (snake[0].x === food.x && snake[0].y === food.y) {
+    food.x = Math.floor(Math.random() * (canvas.width / BOX_SIZE)) * BOX_SIZE;
+    food.y = Math.floor(Math.random() * (canvas.height / BOX_SIZE)) * BOX_SIZE;
+    document.getElementById("score").innerText = ++score;
+  } else {
+    snake.pop();
+  }
 }
 
 function render() {
@@ -54,4 +64,7 @@ function render() {
   snake.forEach((segment) => {
     context.fillRect(segment.x, segment.y, BOX_SIZE, BOX_SIZE);
   });
+
+  context.fillStyle = FOOD_COLOR;
+  context.fillRect(food.x, food.y, BOX_SIZE, BOX_SIZE);
 }
