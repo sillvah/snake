@@ -54,6 +54,11 @@ function update() {
   } else {
     snake.pop();
   }
+
+  const snakeBody = snake.slice(1);
+  if (snakeBody.some(({ x, y }) => snake[0].x === x && snake[0].y === y)) {
+    clearInterval(gameLoop);
+  }
 }
 
 function render() {
