@@ -19,23 +19,19 @@ const gameLoop = setInterval(() => {
 }, MS_PER_FRAME);
 
 function processInput(event) {
-  switch (event.key) {
-    case "ArrowLeft":
-      velocity.dx = -BOX_SIZE;
-      velocity.dy = 0;
-      break;
-    case "ArrowUp":
-      velocity.dx = 0;
-      velocity.dy = -BOX_SIZE;
-      break;
-    case "ArrowRight":
-      velocity.dx = BOX_SIZE;
-      velocity.dy = 0;
-      break;
-    case "ArrowDown":
-      velocity.dx = 0;
-      velocity.dy = BOX_SIZE;
-      break;
+  const { key } = event;
+  if (key === "ArrowLeft" && velocity.dx <= 0) {
+    velocity.dx = -BOX_SIZE;
+    velocity.dy = 0;
+  } else if (key === "ArrowUp" && velocity.dy <= 0) {
+    velocity.dx = 0;
+    velocity.dy = -BOX_SIZE;
+  } else if (key === "ArrowRight" && velocity.dx >= 0) {
+    velocity.dx = BOX_SIZE;
+    velocity.dy = 0;
+  } else if (key === "ArrowDown" && velocity.dy >= 0) {
+    velocity.dx = 0;
+    velocity.dy = BOX_SIZE;
   }
 }
 
