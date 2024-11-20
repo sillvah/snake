@@ -9,6 +9,7 @@ const FOOD_COLOR = "#f4b400";
 
 let score = 0;
 const snake = [{ x: canvas.width / 2, y: canvas.height / 2 }];
+const directionsQueue = [];
 const velocity = { dx: 0, dy: 0 };
 const food = { x: 32, y: 32 };
 
@@ -21,21 +22,23 @@ const gameLoop = setInterval(() => {
 function processInput(event) {
   const { key } = event;
   if (key === "ArrowLeft" && velocity.dx <= 0) {
-    velocity.dx = -BOX_SIZE;
-    velocity.dy = 0;
+    directionsQueue.push({ dx: -BOX_SIZE, dy: 0 });
   } else if (key === "ArrowUp" && velocity.dy <= 0) {
-    velocity.dx = 0;
-    velocity.dy = -BOX_SIZE;
+    directionsQueue.push({ dx: 0, dy: -BOX_SIZE });
   } else if (key === "ArrowRight" && velocity.dx >= 0) {
-    velocity.dx = BOX_SIZE;
-    velocity.dy = 0;
+    directionsQueue.push({ dx: BOX_SIZE, dy: 0 });
   } else if (key === "ArrowDown" && velocity.dy >= 0) {
-    velocity.dx = 0;
-    velocity.dy = BOX_SIZE;
+    directionsQueue.push({ dx: 0, dy: BOX_SIZE });
   }
 }
 
 function update() {
+  if (directionsQueue.length > 0) {
+    const next = directionsQueue.shift();
+    velocity.dx = next.dx;
+    velocity.dy = next.dy;
+  }
+
   const snakeHead = snake[0];
   const nextHeadPosition = {
     x: snakeHead.x + velocity.dx,
