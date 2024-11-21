@@ -8,9 +8,12 @@ const BACKGROUND_COLOR = "#2b2d2d";
 const FOOD_COLOR = "#f4b400";
 
 let score = 0;
-const snake = [{ x: canvas.width / 2, y: canvas.height / 2 }];
+const snake = [
+  { x: (canvas.width / 4) - BOX_SIZE, y: canvas.height / 2 },
+  { x: (canvas.width / 4) - (BOX_SIZE * 2), y: canvas.height / 2 },
+];
 const directionsQueue = [];
-const velocity = { dx: 0, dy: 0 };
+const velocity = { dx: BOX_SIZE, dy: 0 };
 const food = { x: 32, y: 32 };
 
 document.addEventListener("keydown", processInput);
