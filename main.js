@@ -4,26 +4,48 @@ const context = canvas.getContext("2d");
 const MS_PER_FRAME = 100;
 const BOX_SIZE = 32;
 const SNAKE_COLOR = "#00e575";
-const BACKGROUND_COLOR = "#2b2d2d";
 const FOOD_COLOR = "#f4b400";
+const BACKGROUND_COLOR = "#2b2d2d";
 
-let score = 0;
-const snake = [
+let isGameRunning = false;
+let gameLoop = 0;
+let score = 0, highScore = 0;
+let directionsQueue = [];
+let velocity = { dx: BOX_SIZE, dy: 0 };
+let snake = [
   { x: (canvas.width / 4) - BOX_SIZE, y: canvas.height / 2 },
   { x: (canvas.width / 4) - (BOX_SIZE * 2), y: canvas.height / 2 },
 ];
-const directionsQueue = [];
-const velocity = { dx: BOX_SIZE, dy: 0 };
-const food = { x: 32, y: 32 };
+let food = {
+  x: Math.floor(Math.random() * (canvas.width / BOX_SIZE)) * BOX_SIZE,
+  y: Math.floor(Math.random() * (canvas.height / BOX_SIZE)) * BOX_SIZE,
+};
 
+render();
 document.addEventListener("keydown", processInput);
-const gameLoop = setInterval(() => {
-  update();
-  render();
-}, MS_PER_FRAME);
 
 function processInput(event) {
   const { key } = event;
+
+  if (key === "Enter" && !isGameRunning) {
+    isGameRunning = true;
+    document.getElementById("score").innerText = score = 0;
+    directionsQueue = [];
+    velocity = { dx: BOX_SIZE, dy: 0 };
+    snake = [
+      { x: (canvas.width / 4) - BOX_SIZE, y: canvas.height / 2 },
+      { x: (canvas.width / 4) - (BOX_SIZE * 2), y: canvas.height / 2 },
+    ];
+    food = {
+      x: Math.floor(Math.random() * (canvas.width / BOX_SIZE)) * BOX_SIZE,
+      y: Math.floor(Math.random() * (canvas.height / BOX_SIZE)) * BOX_SIZE,
+    };
+    gameLoop = setInterval(() => {
+      update();
+      render();
+    }, MS_PER_FRAME);
+  }
+
   if (key === "ArrowLeft" && velocity.dx <= 0) {
     directionsQueue.push({ dx: -BOX_SIZE, dy: 0 });
   } else if (key === "ArrowUp" && velocity.dy <= 0) {
@@ -59,7 +81,12 @@ function update() {
 
   const snakeBody = snake.slice(1);
   if (snakeBody.some(({ x, y }) => snake[0].x === x && snake[0].y === y)) {
+    isGameRunning = false;
     clearInterval(gameLoop);
+
+    if (score > highScore) {
+      document.getElementById("high-score").innerText = highScore = score;
+    }
   }
 }
 
