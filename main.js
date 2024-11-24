@@ -1,3 +1,6 @@
+Array.prototype.enqueue = Array.prototype.unshift;
+Array.prototype.dequeue = Array.prototype.pop;
+
 const canvas = document.getElementById("snake");
 const context = canvas.getContext("2d");
 
@@ -7,11 +10,10 @@ const SNAKE_COLOR = "#00e575";
 const FOOD_COLOR = "#f4b400";
 const BACKGROUND_COLOR = "#2b2d2d";
 
-let isGameRunning = false;
 let gameLoop = 0;
 let score = 0, highScore = 0;
 let food = {};
-let directionsQueue = [];
+let directions = [];
 let velocity = { dx: BOX_SIZE, dy: 0 };
 let snake = [
   { x: (canvas.width / 4) - BOX_SIZE, y: canvas.height / 2 },
@@ -24,10 +26,9 @@ document.addEventListener("keydown", processInput);
 function processInput(event) {
   const { key } = event;
 
-  if (key === "Enter" && !isGameRunning) {
-    isGameRunning = true;
+  if (key === "Enter" && gameLoop === 0) {
     document.getElementById("score").innerText = score = 0;
-    directionsQueue = [];
+    directions = [];
     velocity = { dx: BOX_SIZE, dy: 0 };
     snake = [
       { x: (canvas.width / 4) - BOX_SIZE, y: canvas.height / 2 },
@@ -44,21 +45,19 @@ function processInput(event) {
   }
 
   if (key === "ArrowLeft" && velocity.dx <= 0) {
-    directionsQueue.push({ dx: -BOX_SIZE, dy: 0 });
+    directions.enqueue({ dx: -BOX_SIZE, dy: 0 });
   } else if (key === "ArrowUp" && velocity.dy <= 0) {
-    directionsQueue.push({ dx: 0, dy: -BOX_SIZE });
+    directions.enqueue({ dx: 0, dy: -BOX_SIZE });
   } else if (key === "ArrowRight" && velocity.dx >= 0) {
-    directionsQueue.push({ dx: BOX_SIZE, dy: 0 });
+    directions.enqueue({ dx: BOX_SIZE, dy: 0 });
   } else if (key === "ArrowDown" && velocity.dy >= 0) {
-    directionsQueue.push({ dx: 0, dy: BOX_SIZE });
+    directions.enqueue({ dx: 0, dy: BOX_SIZE });
   }
 }
 
 function update() {
-  if (directionsQueue.length > 0) {
-    const next = directionsQueue.shift();
-    velocity.dx = next.dx;
-    velocity.dy = next.dy;
+  if (directions.length > 0) {
+    velocity = directions.dequeue();
   }
 
   const snakeHead = snake[0];
@@ -69,17 +68,17 @@ function update() {
   snake.unshift(nextHeadPosition);
 
   if (snake[0].x === food.x && snake[0].y === food.y) {
+    document.getElementById("score").innerText = ++score;
     food.x = Math.floor(Math.random() * (canvas.width / BOX_SIZE)) * BOX_SIZE;
     food.y = Math.floor(Math.random() * (canvas.height / BOX_SIZE)) * BOX_SIZE;
-    document.getElementById("score").innerText = ++score;
   } else {
     snake.pop();
   }
 
   const snakeBody = snake.slice(1);
   if (snakeBody.some(({ x, y }) => snake[0].x === x && snake[0].y === y)) {
-    isGameRunning = false;
     clearInterval(gameLoop);
+    gameLoop = 0;
 
     if (score > highScore) {
       document.getElementById("high-score").innerText = highScore = score;
@@ -91,11 +90,11 @@ function render() {
   context.fillStyle = BACKGROUND_COLOR;
   context.fillRect(0, 0, canvas.width, canvas.height);
 
+  context.fillStyle = FOOD_COLOR;
+  context.fillRect(food.x, food.y, BOX_SIZE, BOX_SIZE);
+
   context.fillStyle = SNAKE_COLOR;
   snake.forEach((segment) => {
     context.fillRect(segment.x, segment.y, BOX_SIZE, BOX_SIZE);
   });
-
-  context.fillStyle = FOOD_COLOR;
-  context.fillRect(food.x, food.y, BOX_SIZE, BOX_SIZE);
 }
