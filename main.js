@@ -10,16 +10,13 @@ const BACKGROUND_COLOR = "#2b2d2d";
 let isGameRunning = false;
 let gameLoop = 0;
 let score = 0, highScore = 0;
+let food = {};
 let directionsQueue = [];
 let velocity = { dx: BOX_SIZE, dy: 0 };
 let snake = [
   { x: (canvas.width / 4) - BOX_SIZE, y: canvas.height / 2 },
   { x: (canvas.width / 4) - (BOX_SIZE * 2), y: canvas.height / 2 },
 ];
-let food = {
-  x: Math.floor(Math.random() * (canvas.width / BOX_SIZE)) * BOX_SIZE,
-  y: Math.floor(Math.random() * (canvas.height / BOX_SIZE)) * BOX_SIZE,
-};
 
 render();
 document.addEventListener("keydown", processInput);
