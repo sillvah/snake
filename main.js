@@ -7,6 +7,7 @@ const context = canvas.getContext("2d");
 const MS_PER_FRAME = 100;
 const BOX_SIZE = 27;
 const FOOD_PX = BOX_SIZE / 3;
+const FOOD_POINTS = 7;
 const SNAKE_COLOR = "#251913";
 const FOOD_COLOR = "#24190f";
 const BACKGROUND_COLOR = "#8b966c";
@@ -29,7 +30,8 @@ function processInput(event) {
   const { key } = event;
 
   if (key === "Enter" && gameLoop === 0) {
-    document.getElementById("score").innerText = score = 0;
+    score = 0;
+    document.getElementById("score").innerText = "0000";
     directions = [];
     velocity = { dx: BOX_SIZE, dy: 0 };
     snake = [
@@ -81,9 +83,17 @@ function update() {
   }
 
   if (snake[0].x === food.x && snake[0].y === food.y) {
-    document.getElementById("score").innerText = ++score;
     food.x = Math.floor(Math.random() * (canvas.width / BOX_SIZE)) * BOX_SIZE;
     food.y = Math.floor(Math.random() * (canvas.height / BOX_SIZE)) * BOX_SIZE;
+
+    score += FOOD_POINTS;
+    document.getElementById("score").innerText = String(score).padStart(4, "0");
+
+    if (score > highScore) {
+      highScore = score;
+      const newHighScore = String(highScore).padStart(4, "0");
+      document.getElementById("high-score").innerText = newHighScore;
+    }
   } else {
     snake.pop();
   }
@@ -92,10 +102,6 @@ function update() {
   if (snakeBody.some(({ x, y }) => snake[0].x === x && snake[0].y === y)) {
     clearInterval(gameLoop);
     gameLoop = 0;
-
-    if (score > highScore) {
-      document.getElementById("high-score").innerText = highScore = score;
-    }
   }
 }
 
