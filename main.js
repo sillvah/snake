@@ -67,6 +67,16 @@ function update() {
   };
   snake.unshift(nextHeadPosition);
 
+  if (nextHeadPosition.x > canvas.width - BOX_SIZE) {
+    nextHeadPosition.x = 0;
+  } else if (nextHeadPosition.x < 0) {
+    nextHeadPosition.x = canvas.width - BOX_SIZE;
+  } else if (nextHeadPosition.y > canvas.height - BOX_SIZE) {
+    nextHeadPosition.y = 0;
+  } else if (nextHeadPosition.y < 0) {
+    nextHeadPosition.y = canvas.height - BOX_SIZE;
+  }
+
   if (snake[0].x === food.x && snake[0].y === food.y) {
     document.getElementById("score").innerText = ++score;
     food.x = Math.floor(Math.random() * (canvas.width / BOX_SIZE)) * BOX_SIZE;
