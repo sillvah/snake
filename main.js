@@ -17,8 +17,9 @@ let food = {};
 let directions = [];
 let velocity = { dx: BOX_SIZE, dy: 0 };
 let snake = [
-  { x: BOX_SIZE, y: 0 },
-  { x: 0, y: 0 },
+  { x: canvas.width / 2 - 1 * BOX_SIZE, y: canvas.height / 2 },
+  { x: canvas.width / 2 - 2 * BOX_SIZE, y: canvas.height / 2 },
+  { x: canvas.width / 2 - 3 * BOX_SIZE, y: canvas.height / 2 },
 ];
 
 render();
@@ -32,8 +33,9 @@ function processInput(event) {
     directions = [];
     velocity = { dx: BOX_SIZE, dy: 0 };
     snake = [
-      { x: BOX_SIZE, y: 0 },
-      { x: 0, y: 0 },
+      { x: canvas.width / 2 - 1 * BOX_SIZE, y: canvas.height / 2 },
+      { x: canvas.width / 2 - 2 * BOX_SIZE, y: canvas.height / 2 },
+      { x: canvas.width / 2 - 3 * BOX_SIZE, y: canvas.height / 2 },
     ];
     food = {
       x: Math.floor(Math.random() * (canvas.width / BOX_SIZE)) * BOX_SIZE,
