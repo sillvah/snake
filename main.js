@@ -5,10 +5,11 @@ const canvas = document.getElementById("snake");
 const context = canvas.getContext("2d");
 
 const MS_PER_FRAME = 100;
-const BOX_SIZE = 32;
-const SNAKE_COLOR = "#00e575";
-const FOOD_COLOR = "#f4b400";
-const BACKGROUND_COLOR = "#2b2d2d";
+const BOX_SIZE = 27;
+const FOOD_PX = BOX_SIZE / 3;
+const SNAKE_COLOR = "#251913";
+const FOOD_COLOR = "#24190f";
+const BACKGROUND_COLOR = "#8b966c";
 
 let gameLoop = 0;
 let score = 0, highScore = 0;
@@ -16,8 +17,8 @@ let food = {};
 let directions = [];
 let velocity = { dx: BOX_SIZE, dy: 0 };
 let snake = [
-  { x: (canvas.width / 4) - BOX_SIZE, y: canvas.height / 2 },
-  { x: (canvas.width / 4) - (BOX_SIZE * 2), y: canvas.height / 2 },
+  { x: BOX_SIZE, y: 0 },
+  { x: 0, y: 0 },
 ];
 
 render();
@@ -31,8 +32,8 @@ function processInput(event) {
     directions = [];
     velocity = { dx: BOX_SIZE, dy: 0 };
     snake = [
-      { x: (canvas.width / 4) - BOX_SIZE, y: canvas.height / 2 },
-      { x: (canvas.width / 4) - (BOX_SIZE * 2), y: canvas.height / 2 },
+      { x: BOX_SIZE, y: 0 },
+      { x: 0, y: 0 },
     ];
     food = {
       x: Math.floor(Math.random() * (canvas.width / BOX_SIZE)) * BOX_SIZE,
@@ -101,10 +102,15 @@ function render() {
   context.fillRect(0, 0, canvas.width, canvas.height);
 
   context.fillStyle = FOOD_COLOR;
-  context.fillRect(food.x, food.y, BOX_SIZE, BOX_SIZE);
+  context.fillRect(food.x + FOOD_PX, food.y, FOOD_PX, FOOD_PX);
+  context.fillRect(food.x, food.y + FOOD_PX, FOOD_PX, FOOD_PX);
+  context.fillRect(food.x + FOOD_PX * 2, food.y + FOOD_PX, FOOD_PX, FOOD_PX);
+  context.fillRect(food.x + FOOD_PX, food.y + FOOD_PX * 2, FOOD_PX, FOOD_PX);
 
   context.fillStyle = SNAKE_COLOR;
+  context.strokeStyle = BACKGROUND_COLOR;
   snake.forEach((segment) => {
     context.fillRect(segment.x, segment.y, BOX_SIZE, BOX_SIZE);
+    context.strokeRect(segment.x, segment.y, BOX_SIZE, BOX_SIZE);
   });
 }
