@@ -17,11 +17,7 @@ let score = 0, highScore = 0;
 let food = {};
 let directions = [];
 let velocity = { dx: BOX_SIZE, dy: 0 };
-let snake = [
-  { x: canvas.width / 2 - 1 * BOX_SIZE, y: canvas.height / 2 },
-  { x: canvas.width / 2 - 2 * BOX_SIZE, y: canvas.height / 2 },
-  { x: canvas.width / 2 - 3 * BOX_SIZE, y: canvas.height / 2 },
-];
+let snake = makeSnake();
 
 render();
 document.addEventListener("keydown", processInput);
@@ -34,15 +30,8 @@ function processInput(event) {
     document.getElementById("score").innerText = "0000";
     directions = [];
     velocity = { dx: BOX_SIZE, dy: 0 };
-    snake = [
-      { x: canvas.width / 2 - 1 * BOX_SIZE, y: canvas.height / 2 },
-      { x: canvas.width / 2 - 2 * BOX_SIZE, y: canvas.height / 2 },
-      { x: canvas.width / 2 - 3 * BOX_SIZE, y: canvas.height / 2 },
-    ];
-    food = {
-      x: Math.floor(Math.random() * (canvas.width / BOX_SIZE)) * BOX_SIZE,
-      y: Math.floor(Math.random() * (canvas.height / BOX_SIZE)) * BOX_SIZE,
-    };
+    snake = makeSnake();
+    food = makeFood();
     gameLoop = setInterval(() => {
       update();
       render();
@@ -83,8 +72,7 @@ function update() {
   }
 
   if (snake[0].x === food.x && snake[0].y === food.y) {
-    food.x = Math.floor(Math.random() * (canvas.width / BOX_SIZE)) * BOX_SIZE;
-    food.y = Math.floor(Math.random() * (canvas.height / BOX_SIZE)) * BOX_SIZE;
+    food = makeFood();
 
     score += FOOD_POINTS;
     document.getElementById("score").innerText = String(score).padStart(4, "0");
@@ -121,4 +109,25 @@ function render() {
     context.fillRect(segment.x, segment.y, BOX_SIZE, BOX_SIZE);
     context.strokeRect(segment.x, segment.y, BOX_SIZE, BOX_SIZE);
   });
+}
+
+/**
+ * Creates a snake at the default position on the canvas.
+ */
+function makeSnake() {
+  return [
+    { x: canvas.width / 2 - 1 * BOX_SIZE, y: canvas.height / 2 },
+    { x: canvas.width / 2 - 2 * BOX_SIZE, y: canvas.height / 2 },
+    { x: canvas.width / 2 - 3 * BOX_SIZE, y: canvas.height / 2 },
+  ];
+}
+
+/**
+ * Creates a new food object at a random position within the canvas.
+ */
+function makeFood() {
+  return {
+    x: Math.floor(Math.random() * (canvas.width / BOX_SIZE)) * BOX_SIZE,
+    y: Math.floor(Math.random() * (canvas.height / BOX_SIZE)) * BOX_SIZE,
+  };
 }
