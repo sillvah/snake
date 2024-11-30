@@ -20,10 +20,25 @@ let velocity = { dx: BOX_SIZE, dy: 0 };
 let snake = makeSnake();
 
 render();
+
+const arrowToDirectionMap = {
+  ArrowLeft: { dx: -BOX_SIZE, dy: 0 },
+  ArrowUp: { dx: 0, dy: -BOX_SIZE },
+  ArrowRight: { dx: BOX_SIZE, dy: 0 },
+  ArrowDown: { dx: 0, dy: BOX_SIZE },
+};
+
+const keyPressed = {};
 document.addEventListener("keydown", processInput);
+document.addEventListener("keyup", ({ key }) => keyPressed[key] = false);
 
 function processInput(event) {
   const { key } = event;
+  const nextDirection = arrowToDirectionMap[key];
+  if (!keyPressed[key] && nextDirection) {
+    keyPressed[key] = true;
+    directions.enqueue(nextDirection);
+  }
 
   if (key === "Enter" && gameLoop === 0) {
     score = 0;
@@ -37,21 +52,20 @@ function processInput(event) {
       render();
     }, MS_PER_FRAME);
   }
-
-  if (key === "ArrowLeft" && velocity.dx <= 0) {
-    directions.enqueue({ dx: -BOX_SIZE, dy: 0 });
-  } else if (key === "ArrowUp" && velocity.dy <= 0) {
-    directions.enqueue({ dx: 0, dy: -BOX_SIZE });
-  } else if (key === "ArrowRight" && velocity.dx >= 0) {
-    directions.enqueue({ dx: BOX_SIZE, dy: 0 });
-  } else if (key === "ArrowDown" && velocity.dy >= 0) {
-    directions.enqueue({ dx: 0, dy: BOX_SIZE });
-  }
 }
 
 function update() {
   if (directions.length > 0) {
-    velocity = directions.dequeue();
+    const nextDirection = directions.dequeue();
+    if (nextDirection.dx < 0 && velocity.dx <= 0) {
+      velocity = nextDirection;
+    } else if (nextDirection.dx > 0 && velocity.dx >= 0) {
+      velocity = nextDirection;
+    } else if (nextDirection.dy < 0 && velocity.dy <= 0) {
+      velocity = nextDirection;
+    } else if (nextDirection.dy > 0 && velocity.dy >= 0) {
+      velocity = nextDirection;
+    }
   }
 
   const snakeHead = snake[0];
