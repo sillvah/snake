@@ -11,6 +11,8 @@ const FOOD_POINTS = 7;
 const SNAKE_COLOR = "#251913";
 const FOOD_COLOR = "#24190f";
 const BACKGROUND_COLOR = "#8b966c";
+const foodEatenSound = new Audio("assets/audio/food.mp3");
+const collisionSound = new Audio("assets/audio/collision.mp3");
 
 let gameLoop = 0;
 let score = 0, highScore = 0;
@@ -86,11 +88,11 @@ function update() {
   }
 
   if (snake[0].x === food.x && snake[0].y === food.y) {
+    foodEatenSound.play();
     food = makeFood();
 
     score += FOOD_POINTS;
     document.getElementById("score").innerText = String(score).padStart(4, "0");
-
     if (score > highScore) {
       highScore = score;
       const newHighScore = String(highScore).padStart(4, "0");
@@ -102,6 +104,7 @@ function update() {
 
   const snakeBody = snake.slice(1);
   if (snakeBody.some(({ x, y }) => snake[0].x === x && snake[0].y === y)) {
+    collisionSound.play();
     clearInterval(gameLoop);
     gameLoop = 0;
   }
