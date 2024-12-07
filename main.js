@@ -2,7 +2,7 @@ Array.prototype.enqueue = Array.prototype.unshift;
 Array.prototype.dequeue = Array.prototype.pop;
 
 const canvas = document.getElementById("snake");
-const context = canvas.getContext("2d");
+const ctx = canvas.getContext("2d");
 
 const MS_PER_FRAME = 100;
 const BOX_SIZE = 27;
@@ -57,6 +57,7 @@ function processInput(event) {
 }
 
 function update() {
+  // Move snake
   if (directions.length > 0) {
     const nextDirection = directions.dequeue();
     if (nextDirection.dx < 0 && velocity.dx <= 0) {
@@ -69,14 +70,13 @@ function update() {
       velocity = nextDirection;
     }
   }
-
-  const snakeHead = snake[0];
   const nextHeadPosition = {
-    x: snakeHead.x + velocity.dx,
-    y: snakeHead.y + velocity.dy,
+    x: snake[0].x + velocity.dx,
+    y: snake[0].y + velocity.dy,
   };
   snake.unshift(nextHeadPosition);
 
+  // Wrap snake's position around the canvas
   if (nextHeadPosition.x > canvas.width - BOX_SIZE) {
     nextHeadPosition.x = 0;
   } else if (nextHeadPosition.x < 0) {
@@ -87,10 +87,10 @@ function update() {
     nextHeadPosition.y = canvas.height - BOX_SIZE;
   }
 
+  // Handle logic for eating food
   if (snake[0].x === food.x && snake[0].y === food.y) {
     foodEatenSound.play();
     food = makeFood();
-
     score += FOOD_POINTS;
     document.getElementById("score").innerText = String(score).padStart(4, "0");
     if (score > highScore) {
@@ -102,6 +102,7 @@ function update() {
     snake.pop();
   }
 
+  // Check for snake self-collision
   const snakeBody = snake.slice(1);
   if (snakeBody.some(({ x, y }) => snake[0].x === x && snake[0].y === y)) {
     collisionSound.play();
@@ -111,20 +112,20 @@ function update() {
 }
 
 function render() {
-  context.fillStyle = BACKGROUND_COLOR;
-  context.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = BACKGROUND_COLOR;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  context.fillStyle = FOOD_COLOR;
-  context.fillRect(food.x + FOOD_PX, food.y, FOOD_PX, FOOD_PX);
-  context.fillRect(food.x, food.y + FOOD_PX, FOOD_PX, FOOD_PX);
-  context.fillRect(food.x + FOOD_PX * 2, food.y + FOOD_PX, FOOD_PX, FOOD_PX);
-  context.fillRect(food.x + FOOD_PX, food.y + FOOD_PX * 2, FOOD_PX, FOOD_PX);
+  ctx.fillStyle = FOOD_COLOR;
+  ctx.fillRect(food.x + FOOD_PX, food.y, FOOD_PX, FOOD_PX);
+  ctx.fillRect(food.x, food.y + FOOD_PX, FOOD_PX, FOOD_PX);
+  ctx.fillRect(food.x + FOOD_PX * 2, food.y + FOOD_PX, FOOD_PX, FOOD_PX);
+  ctx.fillRect(food.x + FOOD_PX, food.y + FOOD_PX * 2, FOOD_PX, FOOD_PX);
 
-  context.fillStyle = SNAKE_COLOR;
-  context.strokeStyle = BACKGROUND_COLOR;
+  ctx.fillStyle = SNAKE_COLOR;
+  ctx.strokeStyle = BACKGROUND_COLOR;
   snake.forEach((segment) => {
-    context.fillRect(segment.x, segment.y, BOX_SIZE, BOX_SIZE);
-    context.strokeRect(segment.x, segment.y, BOX_SIZE, BOX_SIZE);
+    ctx.fillRect(segment.x, segment.y, BOX_SIZE, BOX_SIZE);
+    ctx.strokeRect(segment.x, segment.y, BOX_SIZE, BOX_SIZE);
   });
 }
 
